@@ -1,8 +1,8 @@
 [Unit]
-Description=sipr0n map generator
+Description=siliconprawn map generator
 After=network.target
 [Service]
-ExecStart=/opt/sipr0n/simapper.sh
+ExecStart=/opt/siliconprawn/simapper.sh
 [Install]
 WantedBy=default.target
 

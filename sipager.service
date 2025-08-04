@@ -1,8 +1,8 @@
 [Unit]
-Description=sipr0n page data generator
+Description=siliconprawn page data generator
 After=network.target
 [Service]
-ExecStart=/opt/sipr0n/sipager.sh
+ExecStart=/opt/siliconprawn/sipager.sh
 [Install]
 WantedBy=default.target
 

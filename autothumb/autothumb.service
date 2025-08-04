@@ -1,8 +1,8 @@
 [Unit]
-Description=sipr0n thumbnail generator
+Description=siliconprawn thumbnail generator
 After=network.target
 [Service]
-ExecStart=/opt/sipr0n/autothumb/run.sh
+ExecStart=/opt/siliconprawn/autothumb/run.sh
 [Install]
 WantedBy=default.target
 
