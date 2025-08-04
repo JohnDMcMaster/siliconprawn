@@ -10,8 +10,8 @@ import os
 import glob
 from pathlib import Path
 import traceback
-from sipr0n import util
-from sipr0n import env
+from siprawn import util
+from siprawn import env
 
 
 def parse_page_fn_uvc(fn):
@@ -61,30 +61,30 @@ def run_page(fn, dry=False):
     txt = open(fn, "r").read()
     """
     Old url:
-    https://siliconpr0n.org/map/intel/80c186/mz_mit20x/
-    https://siliconpr0n.org/map/intel/80c186/single/intel_80c186_mz_mit20x.jpg
+    https://siliconprawn.org/map/intel/80c186/mz_mit20x/
+    https://siliconprawn.org/map/intel/80c186/single/intel_80c186_mz_mit20x.jpg
 
     new:
-    https://siliconpr0n.org/map/intel/80c186/mcmaster_mz_mit20x/
+    https://siliconprawn.org/map/intel/80c186/mcmaster_mz_mit20x/
         but not single...
         maybe patch in next step
-    https://siliconpr0n.org/map/intel/80c186/single/intel_80c186_mcmaster_mz_mit20x.jpg
+    https://siliconprawn.org/map/intel/80c186/single/intel_80c186_mcmaster_mz_mit20x.jpg
 
     Both can be handled by simple find and replace
-    siliconpr0n.org/map/intel/80c186/ => siliconpr0n.org/map/intel/80c186/mcmaster_
-    siliconpr0n.org/map/intel/80c186/single/intel_80c186_ => siliconpr0n.org/map/intel/80c186/single/intel_80c186_mcmaster_
+    siliconprawn.org/map/intel/80c186/ => siliconprawn.org/map/intel/80c186/mcmaster_
+    siliconprawn.org/map/intel/80c186/single/intel_80c186_ => siliconprawn.org/map/intel/80c186/single/intel_80c186_mcmaster_
     """
     has_url = False
     for url in re.findall(r'(https?://[^\s]+)', txt):
         has_url = True
-        # [[https://siliconpr0n.org/map/intel/80502/mz_mit5x/|MZ @ mit5x]]
-        # https://siliconpr0n.org/map/intel/80502/mz_mit5x/|MZ
+        # [[https://siliconprawn.org/map/intel/80502/mz_mit5x/|MZ @ mit5x]]
+        # https://siliconprawn.org/map/intel/80502/mz_mit5x/|MZ
         print("  url", url)
         ppos = url.find("|")
         if ppos >= 0:
             url = url[0:ppos]
 
-        if "siliconpr0n.org/map" not in url:
+        if "siliconprawn.org/map" not in url:
             print("    Skip")
             continue
         map_vendor, map_chipid = util.parse_map_url_vc(url)
@@ -95,7 +95,7 @@ def run_page(fn, dry=False):
                 print("       vendor:   ", page_vendor)
                 print("       chipid:   ", page_chipid)
                 print(
-                    f"      https://siliconpr0n.org/archive/doku.php?id={user}:{page_vendor}:{page_chipid}"
+                    f"      https://siliconprawn.org/archive/doku.php?id={user}:{page_vendor}:{page_chipid}"
                 )
                 print(
                     f"      cd /var/www/archive/data/pages/{user}/{page_vendor}"
@@ -124,7 +124,7 @@ def run_page(fn, dry=False):
                 print("       vendor:   ", page_vendor)
                 print("       chipid:   ", page_chipid)
                 print(
-                    f"      https://siliconpr0n.org/archive/doku.php?id={user}:{page_vendor}:{page_chipid}"
+                    f"      https://siliconprawn.org/archive/doku.php?id={user}:{page_vendor}:{page_chipid}"
                 )
                 print(
                     f"      cd /var/www/archive/data/pages/{user}/{page_vendor}"
@@ -142,7 +142,7 @@ def run_page(fn, dry=False):
             new = url.replace(r1, r2)
         else:
             # should end in /
-            assert re.match("https?://siliconpr0n.org/map/.+/", url)
+            assert re.match("https?://siliconprawn.org/map/.+/", url)
             new = url.replace(f"{vendor}/{chipid}/",
                               f"{vendor_new}/{chipid_new}/{user}_")
         old1 = str(txt)

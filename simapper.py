@@ -7,13 +7,13 @@ import subprocess
 import time
 import traceback
 import map_user
-from sipr0n import env
-from sipr0n.util import FnRetry
-from sipr0n import simap
+from siprawn import env
+from siprawn.util import FnRetry
+from siprawn import simap
 import json
 
 import img2doku
-from sipr0n.util import parse_map_image_user_vcufe, validate_username, map_image_uvcfe_to_basename
+from siprawn.util import parse_map_image_user_vcufe, validate_username, map_image_uvcfe_to_basename
 
 STATUS_DONE = "Done"
 STATUS_PENDING = "Pending"
@@ -301,7 +301,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Monitor for sipr0n map imports')
+        description='Monitor for siprawn map imports')
     parser.add_argument('--dev', action="store_true", help='Local test')
     parser.add_argument('--remote', action="store_true", help='Remote test')
     parser.add_argument('--once',

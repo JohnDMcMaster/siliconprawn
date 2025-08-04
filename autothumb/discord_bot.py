@@ -5,7 +5,7 @@ import urllib.request
 
 client = discord.Client(intents=discord.Intents.default())
 
-web_domain = "https://siliconpr0n.org/"
+web_domain = "https://siliconprawn.org/"
 
 @tasks.loop(seconds=10.0)
 async def fetch_post_pic():

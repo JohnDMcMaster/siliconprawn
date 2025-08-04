@@ -1,4 +1,4 @@
-from sipr0n import env
+from siprawn import env
 """
 Think this format should be shuffle agnostic
 NOTE: there may be collisions for a (vendor, chipid, basename)

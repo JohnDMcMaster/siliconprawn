@@ -3,8 +3,8 @@
 import subprocess
 import datetime
 import img2doku
-from sipr0n import env
-from sipr0n.metadata import default_copyright
+from siprawn import env
+from siprawn.metadata import default_copyright
 
 
 def run(user, copyright_=None, files=[], run_img2doku=True):
@@ -19,7 +19,7 @@ def run(user, copyright_=None, files=[], run_img2doku=True):
     copyright_ = "&copy; " + str(
         datetime.datetime.today().year) + " " + copyright_
     print("Copyright: " + copyright_)
-    cmd = ["pr0nmap", "-c", copyright_] + files
+    cmd = ["prawnmap", "-c", copyright_] + files
     print("Running: " + str(cmd))
     subprocess.check_call(cmd)
     print("")

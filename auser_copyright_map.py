@@ -2,14 +2,14 @@
 import auser_page
 import os
 import traceback
-from sipr0n import util
+from siprawn import util
 import glob
 from pathlib import Path
 import re
 import json
 import datetime
-from sipr0n import metadata
-from sipr0n import env
+from siprawn import metadata
+from siprawn import env
 
 
 class CustomPage(Exception):
@@ -171,7 +171,7 @@ def run(fndir=None, fn_out=None, ignore_errors=False):
         def topage(fn):
             pos = fndir.find("www/map")
             fn = fn[pos + len("www/map"):]
-            return "https://siliconpr0n.org/map/" + fn
+            return "https://siliconprawn.org/map/" + fn
 
         errors = 0
         npages = 0

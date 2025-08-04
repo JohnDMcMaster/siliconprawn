@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-ln -s /opt/sipr0n/autothumb/autothumb.service /etc/systemd/system/
-ln -s /opt/sipr0n/sipager.service /etc/systemd/system/
-ln -s /opt/sipr0n/simapper.service /etc/systemd/system/
+ln -s /opt/siprawn/autothumb/autothumb.service /etc/systemd/system/
+ln -s /opt/siprawn/sipager.service /etc/systemd/system/
+ln -s /opt/siprawn/simapper.service /etc/systemd/system/
 
 sudo systemctl daemon-reload
 

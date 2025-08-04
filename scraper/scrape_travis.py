@@ -8,7 +8,7 @@ import datetime
 import json
 from collections import OrderedDict
 import requests
-from sipr0n import util
+from siprawn import util
 import subprocess
 import hashlib
 
@@ -295,7 +295,7 @@ def is_collision(entry):
     """
     Check if URL is valid or not
     """
-    url = f"https://siliconpr0n.org/map/{entry['vendor']}/{entry['chipid']}/{entry['flavor']}/"
+    url = f"https://siliconprawn.org/map/{entry['vendor']}/{entry['chipid']}/{entry['flavor']}/"
     print(f"Checking {url}...")
     try:
         get = requests.get(url)

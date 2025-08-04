@@ -10,10 +10,10 @@ import os
 import glob
 from pathlib import Path
 import traceback
-from sipr0n import util
-from sipr0n import simap
+from siprawn import util
+from siprawn import simap
 import glob
-from sipr0n import env
+from siprawn import env
 
 
 def single_fn_add_user(fn, collection):

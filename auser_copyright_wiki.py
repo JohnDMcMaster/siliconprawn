@@ -2,13 +2,13 @@
 import auser_page
 import os
 import traceback
-from sipr0n import util
+from siprawn import util
 import glob
 from pathlib import Path
 import re
 import json
-from sipr0n import metadata
-from sipr0n import env
+from siprawn import metadata
+from siprawn import env
 
 
 def run_page(fn, meta):
@@ -31,14 +31,14 @@ def run_page(fn, meta):
         ignore_errors = True
     for url in re.findall(r'(https?://[^\s]+)', txt):
         has_url = True
-        # [[https://siliconpr0n.org/map/intel/80502/mz_mit5x/|MZ @ mit5x]]
-        # https://siliconpr0n.org/map/intel/80502/mz_mit5x/|MZ
+        # [[https://siliconprawn.org/map/intel/80502/mz_mit5x/|MZ @ mit5x]]
+        # https://siliconprawn.org/map/intel/80502/mz_mit5x/|MZ
         print("  url", url)
         ppos = url.find("|")
         if ppos >= 0:
             url = url[0:ppos]
 
-        if "siliconpr0n.org/map" not in url:
+        if "siliconprawn.org/map" not in url:
             print("    Skip: not a /map URL")
             continue
         url_vendor, url_chipid = util.parse_map_url_vc(url)
@@ -72,7 +72,7 @@ def run_page(fn, meta):
                                     basename=basename)
         else:
             # should end in /
-            assert re.match("https?://siliconpr0n.org/map/.+/", url)
+            assert re.match("https?://siliconprawn.org/map/.+/", url)
             map_dir = os.path.basename(os.path.dirname(url))
             map_vendor, map_chipid = util.parse_map_url_vc(url)
             metadata.add_meta_map(meta,
@@ -104,7 +104,7 @@ def run(fndir, fn_out=None, ignore_errors=False):
             pos = fndir.find("data/pages")
             fn = fn[pos + len("data/pages"):]
             fn = fn.replace(".txt", "")
-            return "https://siliconpr0n.org/archive/doku.php?id=" + fn.replace(
+            return "https://siliconprawn.org/archive/doku.php?id=" + fn.replace(
                 "/", ":")
 
         errors = 0

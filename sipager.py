@@ -52,12 +52,12 @@ import traceback
 import tarfile
 
 import img2doku
-from sipr0n.util import parse_wiki_image_user_vcufe, ParseError
-from sipr0n.util import validate_username
+from siprawn.util import parse_wiki_image_user_vcufe, ParseError
+from siprawn.util import validate_username
 import simapper
 from simapper import print_log_break
-from sipr0n import env
-from sipr0n.util import FnRetry, archive_page_last_change_user
+from siprawn import env
+from siprawn.util import FnRetry, archive_page_last_change_user
 
 DEL_ON_DONE = True
 
@@ -425,7 +425,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Monitor for sipr0n map imports')
+        description='Monitor for siprawn map imports')
     parser.add_argument('--dev', action="store_true", help='Local test')
     parser.add_argument('--remote', action="store_true", help='Remote test')
     parser.add_argument('--once',

@@ -7,7 +7,7 @@ import os
 import re
 import errno
 import subprocess
-from sipr0n.util import parse_map_image_vcufe
+from siprawn.util import parse_map_image_vcufe
 
 
 # https://stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
@@ -63,7 +63,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Generate sipr0n wiki template pages from image files')
+        description='Generate siprawn wiki template pages from image files')
     parser.add_argument('--verbose',
                         action="store_true",
                         help='Verbose output')

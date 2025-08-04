@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from sipr0n.util import parse_map_image_vcufe
+from siprawn.util import parse_map_image_vcufe
 
 import subprocess
 import os
@@ -152,7 +152,7 @@ def run(
     collect=None,
     nspre="",
     mappre="map",
-    host="https://siliconpr0n.org",
+    host="https://siliconprawn.org",
     print_pack=True,
     write=False,
     overwrite=False,
@@ -301,7 +301,7 @@ def main():
 
     parser = argparse.ArgumentParser(
         description=
-        'Generate a sipr0n wiki page from image files from the same page')
+        'Generate a siprawn wiki page from image files from the same page')
     parser.add_argument('--verbose',
                         action="store_true",
                         help='Verbose output')

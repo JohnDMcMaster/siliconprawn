@@ -6,8 +6,8 @@ import os
 import glob
 from pathlib import Path
 import traceback
-from sipr0n import util
-from sipr0n import env
+from siprawn import util
+from siprawn import env
 import subprocess
 
 def parse_vendor_chipid(vendor_chipid):
@@ -57,8 +57,8 @@ def rename_page(old_vcu, new_vcu, dry):
         page_txt = page_txt.replace("{old_vendor}:{old_chipid}", "{new_vendor}:{new_chipid}")
         page_txt_new = page_txt
         # Page reference
-        # [[https://siliconpr0n.org/map/efabless/gf-mpw18h1-slot4-openfasoc/mcmaster_mit20x/|mit20x]]
-        # * [[https://siliconpr0n.org/map/efabless/gf-mpw18h1-slot4-openfasoc/single/efabless_gf-mpw18h1-slot4-openfasoc_mcmaster_mit20x.jpg|Single]] (22444x17485, 41.3425MiB)
+        # [[https://siliconprawn.org/map/efabless/gf-mpw18h1-slot4-openfasoc/mcmaster_mit20x/|mit20x]]
+        # * [[https://siliconprawn.org/map/efabless/gf-mpw18h1-slot4-openfasoc/single/efabless_gf-mpw18h1-slot4-openfasoc_mcmaster_mit20x.jpg|Single]] (22444x17485, 41.3425MiB)
         page_txt_new = page_txt_new.replace(f"/{old_vendor}/{old_chipid}/", f"/{new_vendor}/{new_chipid}/")
         page_txt_new = page_txt_new.replace(f"/{old_vendor}_{old_chipid}_", f"/{new_vendor}_{new_chipid}_")
         # vendor_efabless => vendor_tiny-tapeout

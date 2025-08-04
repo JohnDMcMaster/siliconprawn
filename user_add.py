@@ -3,10 +3,10 @@
 import shutil
 import os
 import glob
-from sipr0n import util
-from sipr0n import env
-from sipr0n.util import validate_username
-from sipr0n.metadata import assert_collection_exists
+from siprawn import util
+from siprawn import env
+from siprawn.util import validate_username
+from siprawn.metadata import assert_collection_exists
 import dw_add_user
 import json
 
@@ -154,21 +154,21 @@ Images:
         print(f"Account created for {user}")
         print(f"{user} / {new_password}")
         print("Your namespace / home page is here. Feel free to edit it as you like")
-        print(f"https://siliconpr0n.org/archive/doku.php?id={user}:start")
+        print(f"https://siliconprawn.org/archive/doku.php?id={user}:start")
         print(f"This page contains information on quickly uploading images")
         print(f"Please also check out the tool pages there for additional information such as naming rules")
-        print("https://siliconpr0n.org/archive/doku.php?id=tool:start")
+        print("https://siliconprawn.org/archive/doku.php?id=tool:start")
         print("  Direct link to upload high resolution image (ex: big die scan):")
-        print(f"  https://siliconpr0n.org/archive/doku.php?id=tool:simapper:{user}")
+        print(f"  https://siliconprawn.org/archive/doku.php?id=tool:simapper:{user}")
         print("  Direct link to upload misc wiki images (ex: package):")
-        print(f"  https://siliconpr0n.org/archive/doku.php?id=tool:sipager:{user}")
+        print(f"  https://siliconprawn.org/archive/doku.php?id=tool:sipager:{user}")
         print(f"More general info can be found here:")
-        print("https://siliconpr0n.org/archive/doku.php?id=your_first_page")
+        print("https://siliconprawn.org/archive/doku.php?id=your_first_page")
     else:
         print(f"Upload stubs created for {user}")
-        print(f"https://siliconpr0n.org/archive/doku.php?id={user}:start")
-        print(f"  https://siliconpr0n.org/archive/doku.php?id=tool:simapper:{user}")
-        print(f"  https://siliconpr0n.org/archive/doku.php?id=tool:sipager:{user}")
+        print(f"https://siliconprawn.org/archive/doku.php?id={user}:start")
+        print(f"  https://siliconprawn.org/archive/doku.php?id=tool:simapper:{user}")
+        print(f"  https://siliconprawn.org/archive/doku.php?id=tool:sipager:{user}")
 
 def main():
     import argparse

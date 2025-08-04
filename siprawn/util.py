@@ -94,7 +94,7 @@ def parse_map_image_vcufe(fn):
 def parse_map_url_vc(url):
     if url.lower() != url:
         raise Exception("Found uppercase in URL: %s" % (url, ))
-    m = re.search(r'siliconpr0n.org/map/([_a-z0-9\-]+)/([_a-z0-9\-]+)/', url)
+    m = re.search(r'siliconprawn.org/map/([_a-z0-9\-]+)/([_a-z0-9\-]+)/', url)
     if not m:
         raise Exception("Non-confirming map URL file name: %s" % (url, ))
     vendor = m.group(1)
@@ -130,7 +130,7 @@ def parse_map_local_vc(url):
 
 def parse_single_url_vc(url):
     m = re.search(
-        r'siliconpr0n.org/map/([_a-z0-9\-]+)/([_a-z0-9\-]+)/single/([a-z0-9\-]+)_([a-z0-9\-]+)',
+        r'siliconprawn.org/map/([_a-z0-9\-]+)/([_a-z0-9\-]+)/single/([a-z0-9\-]+)_([a-z0-9\-]+)',
         url)
     if not m:
         raise Exception("Non-confirming file name: %s" % (url, ))

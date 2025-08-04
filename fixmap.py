@@ -4,12 +4,12 @@ Clean up using
 find -name 'index.html.*' -delete
 
 
-https://github.com/JohnDMcMaster/sipr0n/issues/11
+https://github.com/JohnDMcMaster/siprawn/issues/11
 
 let's find / fix the broken pages
 to do this:
 -correlate map's to images
--use pr0nmap to generate just .html
+-use prawnmap to generate just .html
 -parse both .html files
 -emit a warning if they differ
 -if replace:
@@ -22,10 +22,10 @@ import re
 import os
 import glob
 import json
-import pr0nmap
-from pr0nmap.groupxiv import GroupXIV
-from pr0nmap.groupxiv import write_js_meta
-from pr0nmap.map import ImageMapSource
+import prawnmap
+from prawnmap.groupxiv import GroupXIV
+from prawnmap.groupxiv import write_js_meta
+from prawnmap.map import ImageMapSource
 import shutil
 import copy
 import img2doku
@@ -54,7 +54,7 @@ def img2j(img_fn):
         shutil.rmtree(tmp_dir)
 
     try:
-        # Scraped from pr0nmap.main
+        # Scraped from prawnmap.main
         source = ImageMapSource(img_fn, threads=1)
         m = GroupXIV(source, copyright_="copyright")
         m.set_title("title")
