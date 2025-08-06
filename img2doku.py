@@ -137,6 +137,8 @@ def add_maps(map_fns, vendor, chipid, user, map_chipid_url):
         thumb_name = image_2_thumb_name(fnbase)
         image_thumb_txt = "{{" + f"{map_chipid_url}/single/{thumb_name}" + "}}"
         out += f"""\
+
+
 {image_thumb_txt}
 
 [[{map_chipid_url}/{user}_{flavor}/|{flavor}]]
@@ -236,7 +238,7 @@ def run(
 
         out += "<code>\n"
         out += "</code>\n"
-        out += "\n"
+
 
     out += add_maps(map_fns,
                     vendor=vendor,

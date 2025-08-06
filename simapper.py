@@ -22,7 +22,8 @@ STATUS_PENDING = "Pending"
 STATUS_ERROR = "Error"
 STATUS_COLLISION = "Collision"
 
-fn_retry = FnRetry()
+fn_retry_global = FnRetry()
+fn_retry_user = FnRetry()
 
 DEL_ON_DONE = True
 
@@ -213,7 +214,7 @@ def process(entry):
             print("Cleaning up on non-sucess")
             cleanup()
 
-def extract_archives(scrape_dir, assume_user, verbose=False):
+def extract_archives(scrape_dir, assume_user, fn_retry, verbose=False):
     """
     Extract archives into current dir
 
@@ -295,18 +296,16 @@ def print_log_break():
     print("*" * 78)
 
 
-def scrape_upload_dir_inner(scrape_dir, assume_user=None, verbose=False):
+def scrape_upload_dir_inner(scrape_dir, fn_retry, assume_user=None, verbose=False):
     change = False
 
     # don't assume_user here or will double stack against dir name
-    extract_archives(scrape_dir, assume_user=assume_user)
+    extract_archives(scrape_dir, fn_retry=fn_retry, assume_user=assume_user)
 
-    verbose and print("Checking user dir " + assume_user)
-    if assume_user:
-        file_iter = glob.glob(assume_user + "/*")
-    else:
-        file_iter = glob.glob("*")
+    verbose and print("Checking dir %s for %s" % (scrape_dir, assume_user))
+    file_iter = glob.glob(scrape_dir + "/*")
     for im_fn in file_iter:
+        print("Found", im_fn)
         im_fn = os.path.realpath(im_fn)
         if not fn_retry.try_fn(im_fn):
             verbose and print("Already tried: " + im_fn)
@@ -331,17 +330,19 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
     Consider verifying the file size is stable (say over 1 second)
     """
     verbose and print("")
-    verbose and print("Scraping upload dir")
+    verbose and print("Scraping upload dir (outer)")
     change = False
 
     # Check main dir with username prefix
-    scrape_upload_dir_inner(env.SIMAPPER_DIR, verbose=verbose)
+    scrape_upload_dir_inner(env.SIMAPPER_DIR, fn_retry=fn_retry_global, verbose=verbose)
 
+    print("")
+    print("Scraping user dirs")
     # Check user dirs
     for glob_dir in glob.glob(env.SIMAPPER_DIR + "/*"):
         try:
             fn_can = os.path.realpath(glob_dir)
-            if not fn_retry.should_try_fn(fn_can):
+            if not fn_retry_user.should_try_fn(fn_can):
                 verbose and print("Ignoring tried: " + fn_can)
                 continue
             if not os.path.isdir(fn_can):
@@ -353,10 +354,16 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
             user = basename
 
             if not validate_username(user):
-                fn_retry.blacklist_fn(fn_can)
+                fn_retry_user.blacklist_fn(fn_can)
                 print("Invalid user name: %s" % user)
                 continue
-            change = change or scrape_upload_dir_inner(glob_dir, verbose=verbose, assume_user=user)
+            '''
+            if user != "mcmaster":
+                print("FIXME: debug test")
+                continue
+            '''
+            if scrape_upload_dir_inner(glob_dir, fn_retry=fn_retry_user, verbose=verbose, assume_user=user):
+                change = True
         except Exception as e:
             print("WARNING: exception scraping user dir: %s" % (e, ))
             traceback.print_exc()
@@ -406,12 +413,13 @@ def main():
         description='Monitor for siprawn map imports')
     parser.add_argument('--dev', action="store_true", help='Local test')
     parser.add_argument('--remote', action="store_true", help='Remote test')
+    parser.add_argument('--verbose', action="store_true", help='verbose')
     parser.add_argument('--once',
                         action="store_true",
                         help='Test once and exit')
     args = parser.parse_args()
 
-    run(dev=args.dev, remote=args.remote, once=args.once)
+    run(dev=args.dev, remote=args.remote, once=args.once, verbose=args.verbose)
 
 
 if __name__ == "__main__":

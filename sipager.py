@@ -61,7 +61,8 @@ from siprawn.util import FnRetry, archive_page_last_change_user
 
 DEL_ON_DONE = True
 
-fn_retry = FnRetry()
+fn_retry_global = FnRetry()
+fn_retry_user = FnRetry()
 
 
 def file_completed(src_fn):
@@ -173,7 +174,7 @@ def process(page):
     shift_done(page)
 
 
-def extract_archives(scrape_dir, assume_user, verbose=False):
+def extract_archives(scrape_dir, assume_user, fn_retry, verbose=False):
     """
     Extract archives into current dir
 
@@ -234,7 +235,7 @@ def extract_archives(scrape_dir, assume_user, verbose=False):
             tar.close()
 
 
-def bucket_image_dir(scrape_dir, assume_user=None, verbose=False):
+def bucket_image_dir(scrape_dir, fn_retry, assume_user=None, verbose=False):
     """
     Find all images in dir
     Group them together with images going into the same page 
@@ -282,7 +283,7 @@ def bucket_image_dir(scrape_dir, assume_user=None, verbose=False):
     return ret
 
 
-def parse_image_dir(scrape_dir, assume_user=None, verbose=False):
+def parse_image_dir(scrape_dir, fn_retry, assume_user=None, verbose=False):
     """
     Return dict
     {
@@ -310,6 +311,7 @@ def parse_image_dir(scrape_dir, assume_user=None, verbose=False):
     """
     ret = {}
     for page_name, images in bucket_image_dir(scrape_dir,
+                                              fn_retry=fn_retry,
                                               assume_user=assume_user,
                                               verbose=verbose).items():
         user, vendor, chipid = page_name.split(":")
@@ -345,11 +347,12 @@ def parse_image_dir(scrape_dir, assume_user=None, verbose=False):
     return ret
 
 
-def scrape_upload_dir_inner(scrape_dir, assume_user=None, verbose=False):
+def scrape_upload_dir_inner(scrape_dir, fn_retry, assume_user=None, verbose=False):
     change = False
     # don't assume_user here or will double stack against dir name
-    extract_archives(scrape_dir, assume_user=assume_user)
+    extract_archives(scrape_dir, fn_retry=fn_retry, assume_user=assume_user)
     pages = parse_image_dir(scrape_dir,
+                            fn_retry=fn_retry,
                             assume_user=assume_user,
                             verbose=verbose)
     verbose and print_log_break()
@@ -372,14 +375,14 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
     verbose and print("Scraping upload dir")
     change = False
     # Check main dir with username prefix
-    scrape_upload_dir_inner(env.SIPAGER_DIR, verbose=verbose)
+    scrape_upload_dir_inner(env.SIPAGER_DIR, fn_retry=fn_retry_global, verbose=verbose)
 
     # Check user dirs
     for glob_dir in glob.glob(env.SIPAGER_DIR + "/*"):
         fn_can = os.path.realpath(glob_dir)
         if not os.path.isdir(fn_can):
             continue
-        if not fn_retry.should_try_fn(fn_can):
+        if not fn_retry_user.should_try_fn(fn_can):
             continue
         basename = os.path.basename(fn_can)
         if basename == "done":
@@ -387,10 +390,11 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
         user = basename
 
         if not validate_username(user):
-            fn_retry.blacklist_fn(fn_can)
+            fn_retry_user.blacklist_fn(fn_can)
             print("Invalid user name: %s" % user)
             continue
-        change = change or scrape_upload_dir_inner(glob_dir, verbose=verbose, assume_user=user)
+        if scrape_upload_dir_inner(glob_dir, fn_retry=fn_retry_user, verbose=verbose, assume_user=user):
+            change = True
 
     if change:
         simapper.reindex_all(dev=dev)
