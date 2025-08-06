@@ -9,8 +9,10 @@ import traceback
 import map_user
 from siprawn import env
 from siprawn.util import FnRetry
+from siprawn.util import parse_wiki_image_user_vcufe, ParseError
 from siprawn import simap
 import json
+import tarfile
 
 import img2doku
 from siprawn.util import parse_map_image_user_vcufe, validate_username, map_image_uvcfe_to_basename
@@ -28,6 +30,21 @@ DEL_ON_DONE = True
 def get_user_page(user):
     return env.SIMAPPER_USER_DIR + "/" + user + ".txt"
 
+def file_completed(src_fn):
+    """
+    Archive a file that was completed
+    """
+
+    if DEL_ON_DONE:
+        print("Deleting local file %s" % (src_fn, ))
+        os.unlink(src_fn)
+    else:
+        done_dir = os.path.dirname(src_fn) + "/done"
+        if not os.path.exists(done_dir):
+            os.mkdir(done_dir)
+        dst_fn = done_dir + "/" + os.path.basename(src_fn)
+        print("Archiving local file %s => %s" % (src_fn, dst_fn))
+        shutil.move(src_fn, dst_fn)
 
 def log_simapper_update(entry, page=None):
     """
@@ -196,6 +213,66 @@ def process(entry):
             print("Cleaning up on non-sucess")
             cleanup()
 
+def extract_archives(scrape_dir, assume_user, verbose=False):
+    """
+    Extract archives into current dir
+
+    Rules:
+    -File paths ignored / flattened
+    -Only approved image extensions?
+    """
+    def conforming_name(fn):
+        try:
+            _parsed = parse_wiki_image_user_vcufe(fn, assume_user=assume_user)
+        except ParseError:
+            return False
+        return True
+
+    for fn_glob in glob.glob(scrape_dir + "/*.tar"):
+        tar_fn = os.path.realpath(fn_glob)
+
+        if not fn_retry.try_fn(tar_fn):
+            verbose and print("Ignoring tried: " + tar_fn)
+            continue
+        print("tar: examining %s" % (tar_fn, ))
+
+        tar = tarfile.open(tar_fn, "r")
+        fn_cache = set()
+        try:
+            failed = False
+            for tarinfo in tar:
+                if tarinfo.isdir():
+                    continue
+                if not tarinfo.isreg():
+                    print("  WARNING: unrecognized tar element: %s" %
+                          (str(tarinfo), ))
+                    failed = True
+
+                basename = os.path.basename(tarinfo.name).lower()
+                if not conforming_name(basename):
+                    print("  WARNING: bad image file name within archive: %s" %
+                          (tarinfo.name, ))
+                    failed = True
+
+                fn_out = scrape_dir + "/" + basename
+                fn_cache.add(fn_out)
+                with open(fn_out, "wb") as f:
+                    print("  writing %s" % (fn_out))
+                    f.write(tar.extractfile(tarinfo).read())
+
+            if failed:
+                raise ParseError("Encountered errors handling tar")
+
+            # Extracted: trash it
+            file_completed(tar_fn)
+        except ParseError as e:
+            traceback.print_exc()
+            print("WARNING: aborted tar on parse error")
+            for fn in fn_cache:
+                os.unlink(fn)
+        finally:
+            tar.close()
+
 
 warned_wiki_page = set()
 
@@ -218,57 +295,81 @@ def print_log_break():
     print("*" * 78)
 
 
-def scrape_upload_dir(once=False, dev=False, verbose=False):
+def scrape_upload_dir_inner(scrape_dir, assume_user=None, verbose=False):
+    change = False
+
+    # don't assume_user here or will double stack against dir name
+    extract_archives(scrape_dir, assume_user=assume_user)
+
+    verbose and print("Checking user dir " + assume_user)
+    if assume_user:
+        file_iter = glob.glob(assume_user + "/*")
+    else:
+        file_iter = glob.glob("*")
+    for im_fn in file_iter:
+        im_fn = os.path.realpath(im_fn)
+        if not fn_retry.try_fn(im_fn):
+            verbose and print("Already tried: " + im_fn)
+            continue
+        # Ignore done dir
+        if not os.path.isfile(im_fn):
+            verbose and print("Not a file " + im_fn)
+            continue
+        print_log_break()
+        print("Found fn: " + im_fn)
+        process(mk_entry(user=assume_user, local_fn=im_fn))
+        change = True
+
+    return change
+
+
+def scrape_upload_dir_outer(verbose=False, dev=False):
     """
     TODO: consider implementing upload timeout
     As currently implemented dokuwiki buffers files and writes them instantly
     However might want to allow slower uploads such as through sftp
     Consider verifying the file size is stable (say over 1 second)
     """
-    # verbose = True
     verbose and print("")
     verbose and print("Scraping upload dir")
     change = False
-    for user_dir in glob.glob(env.SIMAPPER_DIR + "/*"):
-        user_dir = os.path.realpath(user_dir)
-        if not fn_retry.should_try_fn(user_dir):
-            verbose and print("Ignoring tried: " + user_dir)
-            continue
 
+    # Check main dir with username prefix
+    scrape_upload_dir_inner(env.SIMAPPER_DIR, verbose=verbose)
+
+    # Check user dirs
+    for glob_dir in glob.glob(env.SIMAPPER_DIR + "/*"):
         try:
-            if not os.path.isdir(user_dir):
-                verbose and print("Ignoring not a dir: " + user_dir)
-                fn_retry.blacklist_fn(user_dir)
-                raise Exception("unexpected file " + user_dir)
-            user = os.path.basename(user_dir)
-            verbose and print("Checking user dir " + user_dir)
-            for im_fn in glob.glob(user_dir + "/*"):
-                im_fn = os.path.realpath(im_fn)
-                if not fn_retry.try_fn(im_fn):
-                    verbose and print("Already tried: " + im_fn)
-                    continue
-                # Ignore done dir
-                if not os.path.isfile(im_fn):
-                    verbose and print("Not a file " + im_fn)
-                    continue
-                print_log_break()
-                print("Found fn: " + im_fn)
-                process(mk_entry(user=user, local_fn=im_fn))
-                change = True
+            fn_can = os.path.realpath(glob_dir)
+            if not fn_retry.should_try_fn(fn_can):
+                verbose and print("Ignoring tried: " + fn_can)
+                continue
+            if not os.path.isdir(fn_can):
+                verbose and print("Ignoring not a dir: " + fn_can)
+                continue
+            basename = os.path.basename(fn_can)
+            if basename == "done":
+                continue
+            user = basename
+
+            if not validate_username(user):
+                fn_retry.blacklist_fn(fn_can)
+                print("Invalid user name: %s" % user)
+                continue
+            change = change or scrape_upload_dir_inner(glob_dir, verbose=verbose, assume_user=user)
         except Exception as e:
             print("WARNING: exception scraping user dir: %s" % (e, ))
-            if once:
-                raise
-            else:
-                traceback.print_exc()
+            traceback.print_exc()
     if change:
         reindex_all(dev=dev)
-
 
 def run(once=False, dev=False, remote=False, verbose=False):
     env.setup_env(dev=dev, remote=remote)
 
     # assert getpass.getuser() == "www-data"
+
+    # if not os.path.exists(TMP_DIR):
+    #    os.mkdir(TMP_DIR)
 
     shutil.rmtree(env.SIMAPPER_TMP_DIR, ignore_errors=True)
     os.mkdir(env.SIMAPPER_TMP_DIR)
@@ -286,7 +387,7 @@ def run(once=False, dev=False, remote=False, verbose=False):
                 time.sleep(3)
 
             try:
-                scrape_upload_dir(once=once, dev=dev)
+                scrape_upload_dir_outer(verbose=verbose, dev=dev)
             except Exception as e:
                 print("WARNING: exception: %s" % (e, ))
                 if once:
@@ -295,6 +396,7 @@ def run(once=False, dev=False, remote=False, verbose=False):
                     traceback.print_exc()
     finally:
         shutil.rmtree(env.SIMAPPER_TMP_DIR, ignore_errors=True)
+
 
 
 def main():

@@ -199,25 +199,29 @@ def extract_archives(scrape_dir, assume_user, verbose=False):
         tar = tarfile.open(tar_fn, "r")
         fn_cache = set()
         try:
+            failed = False
             for tarinfo in tar:
                 if tarinfo.isdir():
                     continue
                 if not tarinfo.isreg():
                     print("  WARNING: unrecognized tar element: %s" %
                           (str(tarinfo), ))
-                    raise ParseError()
+                    failed = True
 
                 basename = os.path.basename(tarinfo.name).lower()
                 if not conforming_name(basename):
                     print("  WARNING: bad image file name within archive: %s" %
                           (tarinfo.name, ))
-                    raise ParseError()
+                    failed = True
 
                 fn_out = scrape_dir + "/" + basename
                 fn_cache.add(fn_out)
                 with open(fn_out, "wb") as f:
                     print("  writing %s" % (fn_out))
                     f.write(tar.extractfile(tarinfo).read())
+
+            if failed:
+                raise ParseError("Encountered errors handling tar")
 
             # Extracted: trash it
             file_completed(tar_fn)
@@ -375,7 +379,7 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
         fn_can = os.path.realpath(glob_dir)
         if not os.path.isdir(fn_can):
             continue
-        if fn_retry.should_try_fn(fn_can):
+        if not fn_retry.should_try_fn(fn_can):
             continue
         basename = os.path.basename(fn_can)
         if basename == "done":
@@ -386,7 +390,7 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
             fn_retry.blacklist_fn(fn_can)
             print("Invalid user name: %s" % user)
             continue
-        scrape_upload_dir_inner(glob_dir, verbose=verbose, assume_user=user)
+        change = change or scrape_upload_dir_inner(glob_dir, verbose=verbose, assume_user=user)
 
     if change:
         simapper.reindex_all(dev=dev)

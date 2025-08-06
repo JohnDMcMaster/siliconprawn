@@ -316,7 +316,8 @@ class FnRetry:
         """
         new_mtime = os.path.getmtime(fn)
         old_mtime = self.tried.get(fn)
-        if old_mtime and (old_mtime == True or old_mtime == new_mtime):
+        # Same timestamp previously tried?
+        if old_mtime is not None and old_mtime >= new_mtime:
             return False
         return True
 
@@ -326,7 +327,8 @@ class FnRetry:
         """
         new_mtime = os.path.getmtime(fn)
         old_mtime = self.tried.get(fn)
-        if old_mtime and (old_mtime == True or old_mtime == new_mtime):
+        # Same timestamp previously tried?
+        if old_mtime is not None and old_mtime >= new_mtime:
             return False
         self.tried[fn] = new_mtime
         return True
