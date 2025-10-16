@@ -305,7 +305,7 @@ def scrape_upload_dir_inner(scrape_dir, fn_retry, assume_user=None, verbose=Fals
     verbose and print("Checking dir %s for %s" % (scrape_dir, assume_user))
     file_iter = glob.glob(scrape_dir + "/*")
     for im_fn in file_iter:
-        print("Found", im_fn)
+        verbose and print("Found", im_fn)
         im_fn = os.path.realpath(im_fn)
         if not fn_retry.try_fn(im_fn):
             verbose and print("Already tried: " + im_fn)
@@ -315,7 +315,7 @@ def scrape_upload_dir_inner(scrape_dir, fn_retry, assume_user=None, verbose=Fals
             verbose and print("Not a file " + im_fn)
             continue
         print_log_break()
-        print("Found fn: " + im_fn)
+        verbose and print("Found fn: " + im_fn)
         process(mk_entry(user=assume_user, local_fn=im_fn))
         change = True
 
@@ -336,8 +336,8 @@ def scrape_upload_dir_outer(verbose=False, dev=False):
     # Check main dir with username prefix
     scrape_upload_dir_inner(env.SIMAPPER_DIR, fn_retry=fn_retry_global, verbose=verbose)
 
-    print("")
-    print("Scraping user dirs")
+    verbose and print("")
+    verbose and print("Scraping user dirs")
     # Check user dirs
     for glob_dir in glob.glob(env.SIMAPPER_DIR + "/*"):
         try:
