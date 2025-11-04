@@ -6,7 +6,6 @@ import shutil
 import subprocess
 import time
 import traceback
-import map_user
 from siprawn import env
 from siprawn.util import FnRetry
 from siprawn.util import parse_wiki_image_user_vcufe, ParseError
@@ -176,7 +175,7 @@ def process(entry):
 
         print("Converting...")
         try:
-            map_user.run(user=entry["user"],
+            simap.map_user(user=entry["user"],
                          files=[single_fn],
                          run_img2doku=False)
         except:
