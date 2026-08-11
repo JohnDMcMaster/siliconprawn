@@ -94,7 +94,7 @@ def run(user=None, dry=True, login=True, copyright_=None):
                 f.write(full)
         
         log_template = f"""\
-{{{{FileSharing>simapper/{user}}}}}
+{{{{chunkedupload>simapper/{user}}}}}
 
 ====== Log ======
 """
@@ -117,7 +117,7 @@ def run(user=None, dry=True, login=True, copyright_=None):
 
 
         log_template = f"""\
-{{{{FileSharing>sipager/{user}}}}}
+{{{{chunkedupload>sipager/{user}}}}}
 
 ====== Log ======
 """
