@@ -14,6 +14,11 @@ ARCHIVE_TOOL_DIR = None
 SIMAPPER_USER_DIR = None
 SIPAGER_USER_DIR = None
 SIMAPPER_TMP_DIR = "/tmp/simapper"
+# Where generated maps load groupXIV from.
+# We serve these ourselves, so keep it site relative: the same map HTML then
+# works no matter which of our domains served it (ex: siliconpr0n.org vs
+# siliconprawn.org), instead of pulling scripts cross origin.
+MAP_URL_BASE = "/lib/groupXIV/stable"
 
 
 def setup_env_default():

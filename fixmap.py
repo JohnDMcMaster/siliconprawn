@@ -26,6 +26,7 @@ import prawnmap
 from prawnmap.groupxiv import GroupXIV
 from prawnmap.groupxiv import write_js_meta
 from prawnmap.map import ImageMapSource
+from siprawn import env
 import shutil
 import copy
 import img2doku
@@ -232,7 +233,7 @@ def run_pair(img_fn, html_fn, dry=False, verbose=False):
         print("dry: omitting write")
     else:
         shift_existing_fn(html_fn)
-        write_js_meta(html_fn, j_new)
+        write_js_meta(html_fn, j_new, url_base=env.MAP_URL_BASE)
 
 
 def add_bool_arg(parser, yes_arg, default=False, **kwargs):

@@ -3,6 +3,7 @@ import os
 import shutil
 import datetime
 from siprawn.metadata import default_copyright
+from siprawn import env
 import subprocess
 import img2doku
 
@@ -53,7 +54,10 @@ def map_user(user, copyright_=None, files=[], run_img2doku=True):
     copyright_ = "&copy; " + str(
         datetime.datetime.today().year) + " " + copyright_
     print("Copyright: " + copyright_)
-    cmd = ["prawnmap", "--threads", "4", "-c", copyright_] + files
+    cmd = [
+        "prawnmap", "--threads", "4", "--url-base", env.MAP_URL_BASE, "-c",
+        copyright_
+    ] + files
     print("Running: " + str(cmd))
     subprocess.check_call(cmd)
     print("")
